@@ -1,7 +1,9 @@
 package com.seanpetersgichia.roomwordsample;
 
 import androidx.annotation.NonNull;
+import androidx.room.Entity;
 
+@Entity
 public class Word {
     private String mWord;
 
