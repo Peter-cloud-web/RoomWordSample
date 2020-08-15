@@ -1,4 +1,4 @@
 package com.seanpetersgichia.roomwordsample;
 
-public class WordDao {
+public interface WordDao {
 }
