@@ -18,22 +18,10 @@ public abstract class WordRoomDatabase extends RoomDatabase {
     static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(Number_OF_THREADS);
     private static volatile WordRoomDatabase INSTANCE;
 
-    static WordRoomDatabase getDatabase(final Context context) {
-        if (INSTANCE == null) {
-            synchronized (WordRoomDatabase.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(), WordRoomDatabase.class, "word_database").build();
-                }
-            }
-        }
-        return INSTANCE;
-    }
 
-    public abstract WordDao wordDao();
+    private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
 
-    private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback(){
-
-        public void onOpen(@NonNull SupportSQLiteDatabase db){
+        public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
 
             databaseWriteExecutor.execute(() -> {
@@ -47,7 +35,20 @@ public abstract class WordRoomDatabase extends RoomDatabase {
             });
         }
 
+    };
+
+    static WordRoomDatabase getDatabase(final Context context) {
+        if (INSTANCE == null) {
+            synchronized (WordRoomDatabase.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(), WordRoomDatabase.class, "word_database")
+                            .addCallback(sRoomDatabaseCallback)
+                            .build();
+                }
+            }
+        }
+        return INSTANCE;
     }
 
-
+    public abstract WordDao wordDao();
 }
