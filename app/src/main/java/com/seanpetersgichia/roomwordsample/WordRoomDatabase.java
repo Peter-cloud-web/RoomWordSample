@@ -37,11 +37,12 @@ public abstract class WordRoomDatabase extends RoomDatabase {
 
     };
 
-    static WordRoomDatabase getDatabase(final Context context) {
+    static synchronized WordRoomDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (WordRoomDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), WordRoomDatabase.class, "word_database")
+                            .fallbackToDestructiveMigration()
                             .addCallback(sRoomDatabaseCallback)
                             .build();
                 }
